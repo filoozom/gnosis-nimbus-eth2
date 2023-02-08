@@ -26,16 +26,23 @@ jobs:
           ref: ${{ inputs.version }}
           submodules: recursive
 
-      - name: Build for ${{ matrix.variant }}
+      - name: Build binaries
         run: |
           PLATFORM=${{ fromJson('{ "linux/amd64": "Linux_amd64", "linux/arm64/v8": "Linux_arm64v8", "linux/arm/v7": "Linux_arm32v7" }')[matrix.variant] }}
           sed -i "s#/home/user/nimbus-eth2#$(pwd)#" ./docker/dist/entry_point.sh
           sudo apt install -y gcc-aarch64-linux-gnu gcc-arm-linux-gnueabihf
           ./docker/dist/entry_point.sh $PLATFORM
 
-      - uses: actions/upload-artifact@v2
+      - name: String manipulation
+        id: artefact
+        run: |
+          NAME=${{ matrix.variant }}
+          echo "name=${NAME//\//-}" >> $GITHUB_OUTPUT
+
+      - name: Upload binary as artefact
+        uses: actions/upload-artifact@v2
         with:
-          name: ${{ matrix.variant }}
+          name: ${{ steps.artefact.outputs.name }}
           path: ./build/nimbus_beacon_node
 
   package:

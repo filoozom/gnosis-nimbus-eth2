@@ -8,7 +8,7 @@ RUN addgroup --gid 1000 user \
 USER user
 STOPSIGNAL SIGINT
 
-COPY $TARGETPLATFORM/nimbus_beacon_node /home/user/nimbus_beacon_node
+COPY ${TARGETPLATFORM//\//-}/nimbus_beacon_node /home/user/nimbus_beacon_node
 
 WORKDIR /home/user
 ENTRYPOINT /home/user/nimbus_beacon_node
