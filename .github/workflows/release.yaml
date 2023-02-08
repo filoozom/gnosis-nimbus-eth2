@@ -4,12 +4,38 @@ on:
   workflow_dispatch:
     inputs:
       version:
-        description: 'Nimbus version to build'
+        description: "Nimbus version to build"
         required: true
         type: string
 
 jobs:
-  buildx:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        variant:
+          - linux/amd64
+          - linux/arm64/v8
+          - linux/arm/v7
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          repository: status-im/nimbus-eth2
+          ref: ${{ inputs.version }}
+
+      - name: Build for ${{ matrix.variant }}
+        run: |
+          PLATFORM=${{ fromJson('{ "linux/amd64": "Linux_amd64", "linux/arm64/v8": "Linux_arm64v8", "linux/arm/v7": "Linux_arm32v7" }')[matrix.variant] }}
+          ./docker/dist/entry_point.sh $PLATFORM
+
+      - uses: actions/upload-artifact@v2
+        with:
+          name: ${{ matrix.variant }}
+          path: ./build/nimbus_beacon_node
+
+  package:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -28,6 +54,8 @@ jobs:
           username: ${{ github.repository_owner }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
+      - uses: actions/download-artifact@v2
+
       - name: Docker meta
         id: meta
         uses: docker/metadata-action@v4
@@ -37,7 +65,7 @@ jobs:
             type=semver,pattern={{version}},value=${{ inputs.version }}
             type=semver,pattern={{major}}.{{minor}},value=${{ inputs.version }}
             type=semver,pattern={{major}},value=${{ inputs.version }}
-      
+
       - name: Build and push
         uses: docker/build-push-action@v4
         with:
@@ -46,4 +74,3 @@ jobs:
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
-          build-args: UPSTREAM_VERSION=${{ inputs.version }}
