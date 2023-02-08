@@ -30,6 +30,7 @@ jobs:
         run: |
           PLATFORM=${{ fromJson('{ "linux/amd64": "Linux_amd64", "linux/arm64/v8": "Linux_arm64v8", "linux/arm/v7": "Linux_arm32v7" }')[matrix.variant] }}
           sed -i "s#/home/user/nimbus-eth2#$(pwd)#" ./docker/dist/entry_point.sh
+          apt install gcc-aarch64-linux-gnu gcc-arm-linux-gnueabihf
           ./docker/dist/entry_point.sh $PLATFORM
 
       - uses: actions/upload-artifact@v2
