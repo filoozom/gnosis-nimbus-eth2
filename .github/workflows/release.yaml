@@ -24,6 +24,7 @@ jobs:
         with:
           repository: status-im/nimbus-eth2
           ref: ${{ inputs.version }}
+          submodules: recursive
 
       - name: Build for ${{ matrix.variant }}
         run: |
