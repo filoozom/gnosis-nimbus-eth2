@@ -41,6 +41,9 @@ jobs:
 
       - name: Build binaries
         run: |
+          # Change repo owner
+          chown -R root: .
+
           # Configuration
           PLATFORM=${{ fromJson('{ "linux/amd64": "Linux_amd64", "linux/arm64": "Linux_arm64v8", "linux/arm/v7": "Linux_arm32v7" }')[matrix.variant] }}
           DEPENDENCIES=${{ fromJson('{ "linux/arm64": "gcc-aarch64-linux-gnu", "linux/arm/v7": "gcc-arm-linux-gnueabihf" }')[matrix.variant] }}
