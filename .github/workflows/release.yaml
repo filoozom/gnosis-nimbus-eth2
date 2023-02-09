@@ -42,15 +42,15 @@ jobs:
           ./docker/dist/entry_point.sh $PLATFORM
 
       - name: String manipulation
-        id: artefact
+        id: artifact
         run: |
           NAME=${{ matrix.variant }}
           echo "name=${NAME//\//-}" >> $GITHUB_OUTPUT
 
-      - name: Upload binary as artefact
-        uses: actions/upload-artifact@v2
+      - name: Upload binary as artifact
+        uses: actions/upload-artifact@v3
         with:
-          name: ${{ steps.artefact.outputs.name }}
+          name: ${{ steps.artifact.outputs.name }}
           path: ./build
 
   package:
@@ -73,15 +73,15 @@ jobs:
           username: ${{ github.repository_owner }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Download artefacts
-        uses: actions/download-artifact@v2
+      - name: Download artifacts
+        uses: actions/download-artifact@v3
         with:
-          path: ./artefacts
+          path: ./artifacts
 
       - run: |
           ls -al
-          ls -al artefacts
-          ls -al artefacts/*
+          ls -al artifacts
+          ls -al artifacts/*
 
       - name: Docker meta
         id: meta
