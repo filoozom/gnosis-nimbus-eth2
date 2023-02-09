@@ -13,7 +13,10 @@ jobs:
     # The binary needs to be built in the same Docker image used as base
     # in the final image in order to link the right dependencies.
     container: debian:bullseye-slim
-    
+    defaults:
+      run:
+        shell: bash
+
     runs-on: ubuntu-latest
     strategy:
       matrix:
