@@ -21,7 +21,9 @@ jobs:
 
     steps:
       - name: Install dependencies in build container
-        run: apt install git build-essential
+        run: |
+          apt update
+          apt install -y git build-essential
 
       - name: Checkout
         uses: actions/checkout@v3
