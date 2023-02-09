@@ -78,11 +78,6 @@ jobs:
         with:
           path: ./artifacts
 
-      - run: |
-          ls -al
-          ls -al artifacts
-          ls -al artifacts/*
-
       - name: Docker meta
         id: meta
         uses: docker/metadata-action@v4
