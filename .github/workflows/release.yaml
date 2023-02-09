@@ -20,6 +20,9 @@ jobs:
           - linux/arm/v7
 
     steps:
+      - name: Install dependencies in build container
+        run: sudo apt install git build-essential
+
       - name: Checkout
         uses: actions/checkout@v3
         with:
