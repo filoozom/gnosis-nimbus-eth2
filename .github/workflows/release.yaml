@@ -51,7 +51,7 @@ jobs:
         uses: actions/upload-artifact@v2
         with:
           name: ${{ steps.artefact.outputs.name }}
-          path: ./build/nimbus_beacon_node
+          path: ./build
 
   package:
     needs: build
@@ -73,9 +73,15 @@ jobs:
           username: ${{ github.repository_owner }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - uses: actions/download-artifact@v2
+      - name: Download artefacts
+        uses: actions/download-artifact@v2
         with:
           path: ./artefacts
+
+      - run: |
+          ls -al
+          ls -al artefacts
+          ls -al artefacts/*
 
       - name: Docker meta
         id: meta
