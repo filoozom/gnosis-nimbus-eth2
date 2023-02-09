@@ -1,6 +1,7 @@
 FROM debian:bullseye-slim
 
 ARG TARGETPLATFORM
+SHELL ["/bin/bash", "-c"]
 
 # Hack because we can't do substitutions in ARG / COPY
 COPY ./artefacts/* /tmp
