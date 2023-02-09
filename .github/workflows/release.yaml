@@ -46,6 +46,9 @@ jobs:
           # Install cross-compile dependencies
           [ ! -z $DEPENDENCIES ] && apt install -y $DEPENDENCIES
 
+          # Add GitHub repo to safe directories
+          git config --global --add safe.directory .
+
           # Build the client for the given platform
           ./docker/dist/entry_point.sh $PLATFORM
 
