@@ -7,6 +7,7 @@ SHELL ["/bin/bash", "-c"]
 COPY ./artefacts/* /tmp
 RUN addgroup --gid 1000 user \
   && adduser --disabled-password --gecos '' --uid 1000 --gid 1000 user \
+  && ls -al /tmp/ \
   && cp /tmp/${TARGETPLATFORM//\//-}/nimbus_beacon_node /home/user/nimbus_beacon_node \
   && rm -r /tmp/*
 
