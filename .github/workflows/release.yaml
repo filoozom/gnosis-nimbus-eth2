@@ -15,7 +15,7 @@ jobs:
       matrix:
         variant:
           - linux/amd64
-          - linux/arm64/v8
+          - linux/arm64
           - linux/arm/v7
 
     steps:
@@ -29,8 +29,8 @@ jobs:
       - name: Build binaries
         run: |
           # Configuration
-          PLATFORM=${{ fromJson('{ "linux/amd64": "Linux_amd64", "linux/arm64/v8": "Linux_arm64v8", "linux/arm/v7": "Linux_arm32v7" }')[matrix.variant] }}
-          DEPENDENCIES=${{ fromJson('{ "linux/arm64/v8": "gcc-aarch64-linux-gnu", "linux/arm/v7": "gcc-arm-linux-gnueabihf" }')[matrix.variant] }}
+          PLATFORM=${{ fromJson('{ "linux/amd64": "Linux_amd64", "linux/arm64": "Linux_arm64v8", "linux/arm/v7": "Linux_arm32v7" }')[matrix.variant] }}
+          DEPENDENCIES=${{ fromJson('{ "linux/arm64": "gcc-aarch64-linux-gnu", "linux/arm/v7": "gcc-arm-linux-gnueabihf" }')[matrix.variant] }}
 
           # Patch the upstream build script
           sed -i "s#/home/user/nimbus-eth2#$(pwd)#" ./docker/dist/entry_point.sh
