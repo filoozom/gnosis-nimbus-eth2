@@ -32,6 +32,13 @@ jobs:
           ref: ${{ inputs.version }}
           submodules: recursive
 
+      - name: Logs
+        run: |
+          pwd
+          ls -al
+          ls -al *
+          id
+
       - name: Build binaries
         run: |
           # Configuration
