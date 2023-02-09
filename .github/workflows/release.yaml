@@ -32,16 +32,9 @@ jobs:
           ref: ${{ inputs.version }}
           submodules: recursive
 
-      - name: Logs
-        run: |
-          pwd
-          ls -al
-          ls -al *
-          id
-
       - name: Build binaries
         run: |
-          # Change repo owner
+          # Change repo owner, as it otherwise causes git safe.directory issues for some reason
           chown -R root: .
 
           # Configuration
@@ -55,9 +48,6 @@ jobs:
 
           # Install cross-compile dependencies
           [ ! -z $DEPENDENCIES ] && apt install -y $DEPENDENCIES
-
-          # Add GitHub repo to safe directories
-          git config --global --add safe.directory .
 
           # Build the client for the given platform
           ./docker/dist/entry_point.sh $PLATFORM
