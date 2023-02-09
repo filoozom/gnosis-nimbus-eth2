@@ -10,8 +10,11 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    # The binary needs to be built in the same Docker image used as base
+    # in the final image in order to link the right dependencies.
     container: debian:bullseye-slim
+    
+    runs-on: ubuntu-latest
     strategy:
       matrix:
         variant:
