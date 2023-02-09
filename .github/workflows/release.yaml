@@ -21,7 +21,7 @@ jobs:
 
     steps:
       - name: Install dependencies in build container
-        run: sudo apt install git build-essential
+        run: apt install git build-essential
 
       - name: Checkout
         uses: actions/checkout@v3
@@ -42,7 +42,7 @@ jobs:
           sed -i 's/^NIMFLAGS_COMMON="/NIMFLAGS_COMMON="-d:gnosisChainBinary -d:const_preset=gnosis /g' ./docker/dist/entry_point.sh
 
           # Install cross-compile dependencies
-          [ ! -z $DEPENDENCIES ] && sudo apt install -y $DEPENDENCIES
+          [ ! -z $DEPENDENCIES ] && apt install -y $DEPENDENCIES
 
           # Build the client for the given platform
           ./docker/dist/entry_point.sh $PLATFORM
