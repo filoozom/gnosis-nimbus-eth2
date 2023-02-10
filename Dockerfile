@@ -15,4 +15,4 @@ USER user
 STOPSIGNAL SIGINT
 
 WORKDIR /home/user
-ENTRYPOINT /home/user/nimbus_beacon_node
+ENTRYPOINT ["/home/user/nimbus_beacon_node"]
