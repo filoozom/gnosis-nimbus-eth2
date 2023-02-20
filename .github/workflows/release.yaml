@@ -1,6 +1,8 @@
 name: release
 
 on:
+  schedule:
+    - cron: "0 * * * *"
   workflow_dispatch:
     inputs:
       version:
@@ -9,6 +11,31 @@ on:
         type: string
 
 jobs:
+  version:
+    if: ${{ inputs.version == '' }}
+    runs-on: ubuntu-latest
+    outputs:
+      isNew: ${{ steps.check-new-version.outputs.isNew }}
+      version: ${{ steps.fetch-latest-release.outputs.version }}
+
+    steps:
+      - name: Fetch latest release
+        id: fetch-latest-release
+        run: |
+          VERSION=$(curl https://api.github.com/repos/status-im/nimbus-eth2/releases/latest | jq -r '.tag_name')
+          echo "version=${VERSION}" >> $GITHUB_OUTPUT
+
+      - name: Check if new version
+        id: check-new-version
+        run: |
+          IS_NEW=$(docker manifest inspect ghcr.io/${{ github.repository }}:${{ steps.fetch-latest-release.outputs.version }} >/dev/null 2>&1 && echo false || echo true)
+          echo "isNew=${IS_NEW}" >> $GITHUB_OUTPUT
+
+      - name: Print information
+        run: |
+          echo "Latest release found: ${{ steps.fetch-latest-release.outputs.version }}"
+          echo "Found version is new: ${{ steps.check-new-version.outputs.isNew }}"
+
   build:
     # The binary needs to be built in the same Docker image used as base
     # in the final image in order to link the right dependencies.
@@ -25,6 +52,11 @@ jobs:
           - linux/arm64
           - linux/arm/v7
 
+    if: github.event_name != 'schedule' || needs.check.outputs.isNew == 'true'
+    needs: check
+    env:
+      VERSION: ${{ inputs.version || needs.check.outputs.version }}
+
     steps:
       - name: Install dependencies in build container
         run: |
@@ -35,7 +67,7 @@ jobs:
         uses: actions/checkout@v3
         with:
           repository: status-im/nimbus-eth2
-          ref: ${{ inputs.version }}
+          ref: ${{ env.VERSION }}
           submodules: recursive
 
       - name: Build binaries
@@ -71,8 +103,13 @@ jobs:
           path: ./build
 
   package:
-    needs: build
     runs-on: ubuntu-latest
+
+    if: github.event_name != 'schedule' || needs.check.outputs.isNew == 'true'
+    needs: build
+    env:
+      VERSION: ${{ inputs.version || needs.check.outputs.version }}
+
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -101,9 +138,9 @@ jobs:
         with:
           images: ghcr.io/${{ github.repository }}
           tags: |
-            type=semver,pattern={{version}},value=${{ inputs.version }}
-            type=semver,pattern={{major}}.{{minor}},value=${{ inputs.version }}
-            type=semver,pattern={{major}},value=${{ inputs.version }}
+            type=semver,pattern=v{{version}},value=${{ env.VERSION }}
+            type=semver,pattern=v{{major}}.{{minor}},value=${{ env.VERSION }}
+            type=semver,pattern=v{{major}},value=${{ env.VERSION }}
 
       - name: Build and push
         uses: docker/build-push-action@v4
