@@ -52,10 +52,10 @@ jobs:
           - linux/arm64
           - linux/arm/v7
 
-    if: github.event_name != 'schedule' || needs.check.outputs.isNew == 'true'
-    needs: check
+    if: github.event_name != 'schedule' || needs.version.outputs.isNew == 'true'
+    needs: version
     env:
-      VERSION: ${{ inputs.version || needs.check.outputs.version }}
+      VERSION: ${{ inputs.version || needs.version.outputs.version }}
 
     steps:
       - name: Install dependencies in build container
@@ -105,10 +105,10 @@ jobs:
   package:
     runs-on: ubuntu-latest
 
-    if: github.event_name != 'schedule' || needs.check.outputs.isNew == 'true'
+    if: github.event_name != 'schedule' || needs.version.outputs.isNew == 'true'
     needs: build
     env:
-      VERSION: ${{ inputs.version || needs.check.outputs.version }}
+      VERSION: ${{ inputs.version || needs.version.outputs.version }}
 
     steps:
       - name: Checkout
