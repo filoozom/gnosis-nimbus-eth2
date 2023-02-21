@@ -28,7 +28,7 @@ jobs:
       - name: Check if new version
         id: check-new-version
         run: |
-          IS_NEW=$(docker manifest inspect ghcr.io/${{ github.repository }}:${{ steps.fetch-latest-release.outputs.version }} >/dev/null 2>&1 && echo false || echo true)
+          IS_NEW=$(docker buildx imagetools inspect ghcr.io/${{ github.repository }}:${{ steps.fetch-latest-release.outputs.version }} >/dev/null 2>&1 && echo false || echo true)
           echo "isNew=${IS_NEW}" >> $GITHUB_OUTPUT
 
       - name: Print information
